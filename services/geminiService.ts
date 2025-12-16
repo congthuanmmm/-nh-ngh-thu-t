@@ -3,13 +3,25 @@ import { AnalysisResult } from "../types";
 
 // Initialize Gemini Client
 // CRITICAL: Using process.env.API_KEY as required
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Added fallback to empty string to prevent app crash if key is missing on Vercel
+const apiKey = process.env.API_KEY || '';
+const ai = new GoogleGenAI({ apiKey });
 
 /**
  * Analyzes an image using Gemini Vision (Flash model).
  * It acts as an art critic/curator.
  */
 export const analyzeArtwork = async (imageBase64: string): Promise<AnalysisResult> => {
+  if (!apiKey) {
+    console.error("API Key is missing");
+    return {
+      title: "Configuration Error",
+      critique: "The gallery is currently closed due to missing configuration (API Key). Please check your settings.",
+      mood: "System Error",
+      style: "N/A"
+    };
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -68,6 +80,10 @@ export const analyzeArtwork = async (imageBase64: string): Promise<AnalysisResul
  * Generates a new artwork using Gemini Image Generation.
  */
 export const generateArtwork = async (prompt: string): Promise<string> => {
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please configure it in Vercel settings.");
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
