@@ -1,0 +1,5 @@
+{
+  "name": "Lumina Gallery",
+  "description": "An AI-powered immersive art gallery featuring an AI Curator that analyzes artwork and an Atelier to generate new masterpieces using Gemini.",
+  "requestFramePermissions": []
+}
